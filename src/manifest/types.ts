@@ -258,6 +258,7 @@ export interface Action {
     softwareAgent?: {
         name: string;
         version?: string;
+        specVersion?: string;
         icon?: HashedURI;
         operatingSystem?: string;
     };

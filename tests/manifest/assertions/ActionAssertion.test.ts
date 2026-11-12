@@ -146,6 +146,30 @@ describe('ActionAssertion Tests', function () {
         });
     });
 
+    for (const indexed of [false, true]) {
+        it(`preserves specVersion in an ${indexed ? 'indexed' : 'inline'} software agent`, () => {
+            const softwareAgent = { name: 'test app', specVersion: '2.4.0' };
+            const contentBox = new CBORBox();
+            contentBox.content =
+                indexed ?
+                    {
+                        actions: [{ action: ActionType.C2paCreated, softwareAgentIndex: 0 }],
+                        softwareAgents: [softwareAgent],
+                    }
+                :   { actions: [{ action: ActionType.C2paCreated, softwareAgent }] };
+
+            const assertion = new ActionAssertion();
+            assertion.readContentFromJUMBF(contentBox, claim);
+            assert.equal(assertion.actions[0].softwareAgent?.specVersion, '2.4.0');
+
+            const generated = assertion.generateJUMBFBox(claim);
+            const restoredBox = SuperBox.fromBuffer(generated.toBuffer(false));
+            const restored = new ActionAssertion();
+            restored.readFromJUMBF(restoredBox, claim);
+            assert.equal(restored.actions[0].softwareAgent?.specVersion, '2.4.0');
+        });
+    }
+
     it('create and read back a v1 assertion', function () {
         constructedAssertion.label = AssertionLabels.actions;
         const box = constructedAssertion.generateJUMBFBox();

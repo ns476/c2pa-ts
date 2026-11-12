@@ -132,6 +132,7 @@ export class ActionAssertion extends Assertion {
                 action.softwareAgent = {
                     name: rawAction.softwareAgent.name,
                     version: rawAction.softwareAgent.version,
+                    specVersion: rawAction.softwareAgent.specVersion,
                     icon: rawAction.softwareAgent.icon ? claim.mapHashedURI(rawAction.softwareAgent.icon) : undefined,
                     operatingSystem: rawAction.softwareAgent.operating_system,
                 };
@@ -141,6 +142,7 @@ export class ActionAssertion extends Assertion {
                     action.softwareAgent = {
                         name: softwareAgent.name,
                         version: softwareAgent.version,
+                        specVersion: softwareAgent.specVersion,
                         icon: softwareAgent.icon ? claim.mapHashedURI(softwareAgent.icon) : undefined,
                         operatingSystem: softwareAgent.operating_system,
                     };
@@ -232,6 +234,8 @@ export class ActionAssertion extends Assertion {
                         name: action.softwareAgent.name,
                     };
                     if (action.softwareAgent.version) softwareAgent.version = action.softwareAgent.version;
+                    if (action.softwareAgent.specVersion !== undefined)
+                        softwareAgent.specVersion = action.softwareAgent.specVersion;
                     if (action.softwareAgent.icon)
                         softwareAgent.icon = claim.reverseMapHashedURI(action.softwareAgent.icon);
                     if (action.softwareAgent.operatingSystem)

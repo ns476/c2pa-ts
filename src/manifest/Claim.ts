@@ -28,6 +28,7 @@ export class Claim implements ManifestComponent {
     public signatureRef?: string;
     public claimGeneratorName = Version.productName;
     public claimGeneratorVersion? = Version.productVersion;
+    public claimGeneratorSpecVersion?: string;
     public claimGeneratorInfo?: string;
     public versionReason?: string;
 
@@ -87,6 +88,7 @@ export class Claim implements ManifestComponent {
             const fullContent = claimContent as raw.ClaimV2;
             claim.claimGeneratorName = fullContent.claim_generator_info?.name;
             claim.claimGeneratorVersion = fullContent.claim_generator_info?.version;
+            claim.claimGeneratorSpecVersion = fullContent.claim_generator_info?.specVersion;
             claim.assertions = fullContent.created_assertions.map(a => claim.mapHashedURI(a));
             claim.gatheredAssertions = fullContent.gathered_assertions?.map(a => claim.mapHashedURI(a)) ?? [];
             claim.redactedAssertions = fullContent.redacted_assertions?.map(a => claim.mapHashedURI(a)) ?? [];
@@ -97,6 +99,7 @@ export class Claim implements ManifestComponent {
             if (fullContent.claim_generator_info?.length) {
                 claim.claimGeneratorName = fullContent.claim_generator_info[0].name;
                 claim.claimGeneratorVersion = fullContent.claim_generator_info[0].version;
+                claim.claimGeneratorSpecVersion = fullContent.claim_generator_info[0].specVersion;
             } else {
                 claim.claimGeneratorName = fullContent.claim_generator;
                 claim.claimGeneratorVersion = undefined;
@@ -130,6 +133,7 @@ export class Claim implements ManifestComponent {
 
         const claimGenerator: raw.ClaimGeneratorInfo = { name: this.claimGeneratorName };
         if (this.claimGeneratorVersion) claimGenerator.version = this.claimGeneratorVersion;
+        if (this.claimGeneratorSpecVersion) claimGenerator.specVersion = this.claimGeneratorSpecVersion;
 
         switch (this.version) {
             case ClaimVersion.V1: {

@@ -12,6 +12,7 @@ export interface HashedURI {
 export interface ClaimGeneratorInfo {
     name: string;
     version?: string;
+    specVersion?: string;
     icon?: HashedURI;
     operating_system?: string;
 }

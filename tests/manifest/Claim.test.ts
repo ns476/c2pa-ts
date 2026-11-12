@@ -280,6 +280,23 @@ describe('Claim Tests', function () {
             assert.deepEqual(originalBytes, restoredBytes, 'Binary representations should match');
         });
 
+        for (const version of [ClaimVersion.V1, ClaimVersion.V2]) {
+            for (const specVersion of [undefined, '2.4.0']) {
+                it(`preserves specVersion ${specVersion} in a v${version} claim`, () => {
+                    const claim = new Claim();
+                    claim.version = version;
+                    claim.instanceID = 'xmp:iid:test-instance-id';
+                    claim.signatureRef = 'self#jumbf=c2pa.signature';
+                    claim.format = 'image/jpeg';
+                    claim.claimGeneratorSpecVersion = specVersion;
+
+                    const box = claim.generateJUMBFBox();
+                    const restoredBox = SuperBox.fromBuffer(box.toBuffer(false));
+                    assert.equal(Claim.read(restoredBox).claimGeneratorSpecVersion, specVersion);
+                });
+            }
+        }
+
         it('should handle claim generator info', () => {
             const claim = new Claim();
 
