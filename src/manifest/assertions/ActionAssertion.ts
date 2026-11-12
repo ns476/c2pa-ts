@@ -56,6 +56,7 @@ interface RawTemplateV2 {
 
 interface RawActionsMapV2 {
     actions: RawActionV2[];
+    allActionsIncluded?: boolean;
     templates?: RawTemplateV2[];
     softwareAgents?: raw.ClaimGeneratorInfo[];
     metadata?: raw.AssertionMetadataMap;
@@ -66,6 +67,7 @@ export class ActionAssertion extends Assertion {
     public uuid = raw.UUIDs.cborAssertion;
 
     public actions: Action[] = [];
+    public allActionsIncluded?: boolean;
 
     public readContentFromJUMBF(box: JUMBF.IBox, claim: Claim): void {
         if (!(box instanceof JUMBF.CBORBox) || !this.uuid || !BinaryHelper.bufEqual(this.uuid, raw.UUIDs.cborAssertion))
@@ -113,6 +115,8 @@ export class ActionAssertion extends Assertion {
         const rawContent = box.content as RawActionsMapV2;
         if (!rawContent.actions?.length)
             throw new ValidationError(ValidationStatusCode.AssertionCBORInvalid, this.sourceBox);
+
+        this.allActionsIncluded = rawContent.allActionsIncluded;
 
         for (const rawAction of rawContent.actions) {
             const action: Action = {
@@ -211,7 +215,7 @@ export class ActionAssertion extends Assertion {
     }
 
     private mapActionsV2ToCBORData(claim: Claim): RawActionsMapV2 {
-        return {
+        const result: RawActionsMapV2 = {
             actions: this.actions.map(action => {
                 const res: RawActionV2 = { action: action.action };
                 if (action.reason) res.reason = action.reason;
@@ -247,6 +251,8 @@ export class ActionAssertion extends Assertion {
             // TODO: templates
             // TODO: metadata
         };
+        if (this.allActionsIncluded !== undefined) result.allActionsIncluded = this.allActionsIncluded;
+        return result;
     }
 
     /**

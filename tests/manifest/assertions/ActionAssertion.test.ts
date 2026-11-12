@@ -146,6 +146,20 @@ describe('ActionAssertion Tests', function () {
         });
     });
 
+    for (const allActionsIncluded of [undefined, false, true]) {
+        it(`preserves allActionsIncluded ${allActionsIncluded} in a v2 assertion`, () => {
+            const assertion = new ActionAssertion();
+            assertion.actions = [{ action: ActionType.C2paCreated }];
+            assertion.allActionsIncluded = allActionsIncluded;
+
+            const box = assertion.generateJUMBFBox(claim);
+            const restoredBox = SuperBox.fromBuffer(box.toBuffer(false));
+            const restored = new ActionAssertion();
+            restored.readFromJUMBF(restoredBox, claim);
+            assert.equal(restored.allActionsIncluded, allActionsIncluded);
+        });
+    }
+
     for (const indexed of [false, true]) {
         it(`preserves specVersion in an ${indexed ? 'indexed' : 'inline'} software agent`, () => {
             const softwareAgent = { name: 'test app', specVersion: '2.4.0' };
