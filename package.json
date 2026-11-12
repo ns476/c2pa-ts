@@ -80,6 +80,7 @@
     "build": "tsup",
     "changeset": "changeset",
     "version": "changeset version && bun install",
-    "release": "bun run build && bunx npm@latest exec changeset -- publish"
+    "release": "bun run build && bunx npm@latest exec changeset -- publish",
+    "prepare": "npm run build"
   }
 }
