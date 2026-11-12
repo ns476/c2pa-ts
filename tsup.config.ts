@@ -1,8 +1,15 @@
 import { execSync } from 'node:child_process';
 import { defineConfig } from 'tsup';
 
-const gitRevision = execSync('git rev-parse --short HEAD').toString().trim();
-const version = process.env.npm_package_version;
+let version = process.env.npm_package_version;
+try {
+    const gitRevision = execSync('git rev-parse --short HEAD', { stdio: ['ignore', 'pipe', 'ignore'] })
+        .toString()
+        .trim();
+    version = `${version}-${gitRevision}`;
+} catch {
+    // Source archives do not include Git metadata; use the package version alone.
+}
 
 export default defineConfig({
     entry: {
@@ -15,7 +22,7 @@ export default defineConfig({
         'rfc3161/index': 'src/rfc3161/index.ts',
     },
     define: {
-        'process.env.VERSION': `"${version}-${gitRevision}"`,
+        'process.env.VERSION': JSON.stringify(version),
     },
     format: ['esm'],
     dts: true,
